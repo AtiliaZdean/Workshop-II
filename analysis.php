@@ -171,16 +171,22 @@ $currentPage = 'analysis'; // Set the current page for active tab highlighting
             background-color: #252525;
             color: #fff;
             text-align: center;
-            padding: 3px 10px;
+            padding: 10px 20px;
             border-radius: 4px;
             text-decoration: none;
             font-weight: bold;
-            font-size: 14px;
+            /*font-size: 15px;*/
         }
 
         .print-button {
             margin-top: 20px;
             /* Adjust margin for the print button */
+        }
+
+        .btn:hover,
+        .print-button:hover {
+            background-color: #fff;
+            color: #000;
         }
 
         @media print {
@@ -201,6 +207,12 @@ $currentPage = 'analysis'; // Set the current page for active tab highlighting
                 left: 0;
                 top: 0;
             }
+
+            .btn,
+            .print-button {
+                display: none;
+                /* Hide sidebar, navbar, and print button */
+            }
         }
 
         .btn1 {
@@ -209,11 +221,12 @@ $currentPage = 'analysis'; // Set the current page for active tab highlighting
             /* Yellow background for hover and active states */
             color: #000;
             text-align: center;
-            padding: 10px 20px;
+            padding: 3px 10px;
             border-radius: 4px;
             text-decoration: none;
             font-weight: bold;
             border: none;
+            font-size: 15px;
         }
 
         .btn-danger {
@@ -280,7 +293,7 @@ $currentPage = 'analysis'; // Set the current page for active tab highlighting
                     <div class="col-md-12">
                         <h3>Select Year for Analysis</h3>
                         <form method="POST" action="">
-                            <select name="selectedYear" required>
+                            <select name="selectedYear" required style="width: 200px; height: 45px;">
                                 <option value="">Select Year</option>
                                 <?php
                                 // Populate years dynamically (e.g., from 2000 to current year)
@@ -301,16 +314,16 @@ $currentPage = 'analysis'; // Set the current page for active tab highlighting
                 ?>
 
                     <!-- Reporting Section 1: Volunteers Count by Programme -->
-                    <div class="row">
+                    <div class="row mt-5">
                         <div class="col-md-12">
                             <h3>Volunteers Count by Programme for Year: <?= htmlspecialchars($selectedYear); ?></h3>
                             <div class="chart-container">
                                 <table>
                                     <thead>
                                         <tr>
-                                            <th>Programme</th>
-                                            <th>Description</th>
-                                            <th>Volunteer Count</th>
+                                            <th style="text-align: center;">Programme</th>
+                                            <th style="text-align: center;">Description</th>
+                                            <th style="text-align: center;">Volunteer Count</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -322,9 +335,9 @@ $currentPage = 'analysis'; // Set the current page for active tab highlighting
                                             while ($row = $programmeResult->fetch_assoc()) :
                                         ?>
                                                 <tr>
-                                                    <td><?= htmlspecialchars($row['Programme']); ?></td>
+                                                    <td style="text-align: center;"><?= htmlspecialchars($row['Programme']); ?></td>
                                                     <td><?= htmlspecialchars($row['Description']); ?></td>
-                                                    <td><?= htmlspecialchars($row['Volunteer_Count']); ?></td>
+                                                    <td style="text-align: center;"><?= htmlspecialchars($row['Volunteer_Count']); ?></td>
                                                 </tr>
                                         <?php
                                             endwhile;
@@ -349,8 +362,8 @@ $currentPage = 'analysis'; // Set the current page for active tab highlighting
                                 <table>
                                     <thead>
                                         <tr>
-                                            <th>Year of Study</th>
-                                            <th>Volunteer Count</th>
+                                            <th style="text-align: center;">Year of Study</th>
+                                            <th style="text-align: center;">Volunteer Count</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -362,8 +375,8 @@ $currentPage = 'analysis'; // Set the current page for active tab highlighting
                                             while ($row = $yearResult->fetch_assoc()) :
                                         ?>
                                                 <tr>
-                                                    <td><?= htmlspecialchars($row['YearOfStudy']); ?></td>
-                                                    <td><?= htmlspecialchars($row['Volunteer_Count']); ?></td>
+                                                    <td style="text-align: center;"><?= htmlspecialchars($row['YearOfStudy']); ?></td>
+                                                    <td style="text-align: center;"><?= htmlspecialchars($row['Volunteer_Count']); ?></td>
                                                 </tr>
                                         <?php
                                             endwhile;
@@ -381,7 +394,6 @@ $currentPage = 'analysis'; // Set the current page for active tab highlighting
                     </div>
 
                     <?php include 'charts.php'; ?>
-
                 <?php } // End of POST check 
                 ?>
 
