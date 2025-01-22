@@ -4,6 +4,8 @@ include 'database.php'; // Include database connection
 
 $currentPage = 'manager_monitor'; // Set the current page for active tab highlighting
 
+// Get the search term from the GET request
+$searchTerm = isset($_GET['sub-name']) ? $_GET['sub-name'] : '';
 ?>
 
 <!DOCTYPE html>
@@ -171,17 +173,44 @@ $currentPage = 'manager_monitor'; // Set the current page for active tab highlig
             font-weight: bold;
         }
 
+        .btn:hover {
+            background-color: #fff;
+            color: #000;
+        }
+
+        .btn-history {
+            display: inline-block;
+            background-color: #252525;
+            color: #fff;
+            text-align: center;
+            padding: 3px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 15px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .btn-history:hover {
+            background-color: #fff;
+            color: #000;
+        }
+
         .btn1 {
             display: inline-block;
             background-color: #fab702;
             /* Yellow background for hover and active states */
             color: #000;
             text-align: center;
-            padding: 10px 20px;
+            padding: 3px 10px;
             border-radius: 4px;
             text-decoration: none;
             font-weight: bold;
             border: none;
+            font-size: 15px;
         }
 
         .btn-danger {
@@ -234,7 +263,7 @@ $currentPage = 'manager_monitor'; // Set the current page for active tab highlig
 
     <!-- Main Content Area -->
     <div class="content">
-        <section id="programme-search" class="ftco-section">
+        <section id="manager_monitor" class="ftco-section">
             <div class="container">
                 <div class="row justify-content-center mb-5">
                     <div class="col-md-7 text-center heading-section">
@@ -247,7 +276,7 @@ $currentPage = 'manager_monitor'; // Set the current page for active tab highlig
                         <form method="get">
                             <div class="search-container">
                                 <input type="hidden" name="tab" value="manager_monitor">
-                                <input type="text" name="sub-name" placeholder="Enter name" value="<?= $_GET['sub-name'] ?? ''; ?>">
+                                <input type="text" name="sub-name" placeholder="Enter name" value="<?= htmlspecialchars($searchTerm); ?>">
                                 <button type="submit" class="btn">Search</button>
                             </div>
                         </form>
@@ -255,13 +284,14 @@ $currentPage = 'manager_monitor'; // Set the current page for active tab highlig
                         <table>
                             <thead>
                                 <tr>
-                                    <th>No.</th>
-                                    <th>Matric No.</th>
-                                    <th>Name</th>
-                                    <th>Year Of Study</th>
-                                    <th>Contact No.</th>
-                                    <th>Programme</th>
-                                    <th>Role</th>
+                                    <th style="text-align: center;">No.</th>
+                                    <th style="text-align: center;">Matric No.</th>
+                                    <th style="text-align: center;">Name</th>
+                                    <th style="text-align: center;">Year Of Study</th>
+                                    <th style="text-align: center;">Contact No.</th>
+                                    <th style="text-align: center;">Programme</th>
+                                    <th style="text-align: center;">Role</th>
+                                    <th style="text-align: center;">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -276,37 +306,91 @@ $currentPage = 'manager_monitor'; // Set the current page for active tab highlig
                                               v.YearOfStudy AS 'Year Of Study', 
                                               v.ContactNo AS 'Contact Number', 
                                               p.ProgrammeName AS 'Programme',
-                                              r.RoleName AS 'Role'
+                                              r.RoleName AS 'Role',
+                                              v.VolunteerID,
+                                              v.RoleID
                                           FROM volunteer v 
                                           JOIN programme p ON v.ProgrammeID = p.ProgrammeID 
                                           JOIN role r ON v.RoleID = r.RoleID
                                           WHERE v.ManagerID = ?
                                           AND v.Status = 'Active' ";
 
+                                if (!empty($searchTerm)) {
+                                    $query .= " AND v.Name LIKE ?";
+                                }
+
                                 $stmt = $conn->prepare($query);
-                                $stmt->bind_param("i", $managerID);
+
+                                if (!empty($searchTerm)) {
+                                    $searchTermWithWildcards = '%' . $searchTerm . '%'; // Add wildcards for SQL
+                                    $stmt->bind_param("is", $managerID, $searchTermWithWildcards);
+                                } else {
+                                    $stmt = $conn->prepare($query);
+                                    $stmt->bind_param("i", $managerID);
+                                }
+
                                 $stmt->execute();
                                 $result = $stmt->get_result();
 
-                                $i = 1;
-                                while ($row = $result->fetch_assoc()) :
+                                if ($result->num_rows > 0) {
+                                    $i = 1;
+                                    while ($row = $result->fetch_assoc()) {
+                                        if ($row['RoleID'] == 7) {
+                                            echo "<tr>
+                                                    <td style='text-align: center;'>{$i}</td>
+                                                    <td>{$row['Matric Number']}</td>
+                                                    <td>{$row['Name']}</td>
+                                                    <td style='text-align: center;'>{$row['Year Of Study']}</td>
+                                                    <td>{$row['Contact Number']}</td>
+                                                    <td style='text-align: center;'>{$row['Programme']}</td>
+                                                    <td>{$row['Role']}</td>
+                                                    <td style='text-align: center;'>
+                                                        <button class='btn-history' onclick='showHistory({$row['VolunteerID']})'>History</button>
+                                                    </td>
+                                                  </tr>";
+                                        } else {
+                                            echo "<tr>
+                                                    <td style='text-align: center;'>{$i}</td>
+                                                    <td>{$row['Matric Number']}</td>
+                                                    <td>{$row['Name']}</td>
+                                                    <td style='text-align: center;'>{$row['Year Of Study']}</td>
+                                                    <td>{$row['Contact Number']}</td>
+                                                    <td style='text-align: center;'>{$row['Programme']}</td>
+                                                    <td>{$row['Role']}</td>
+                                                    <td style='text-align: center;'></td> <!-- No button for other roles -->
+                                                  </tr>";
+                                        }
+                                        $i++;
+                                    }
+                                } else {
+                                    echo "<tr><td colspan='7' class='text-center'>No record of '" . htmlspecialchars($searchTerm) . "' found.</td></tr>";
+                                }
                                 ?>
-                                    <tr>
-                                        <td><?= $i++; ?></td>
-                                        <td><?= $row['Matric Number']; ?></td>
-                                        <td><?= $row['Name']; ?></td>
-                                        <td><?= $row['Year Of Study']; ?></td>
-                                        <td><?= $row['Contact Number']; ?></td>
-                                        <td><?= $row['Programme']; ?></td>
-                                        <td><?= $row['Role']; ?></td>
-                                    </tr>
-                                <?php endwhile; ?>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
         </section>
+
+        <!-- History Section -->
+        <div id="history-section" style="margin-top: 50px;">
+            <h3 class="text-center">History of Verifying Sponsors</h3>
+            <div class="container">
+                <table id="history-table">
+                    <thead>
+                        <tr>
+                            <th style="text-align: center;">No.</th>
+                            <th style="text-align: center;">Name</th>
+                            <th style="text-align: center;">Sponsor Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- History data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <!-- Footer -->
@@ -325,6 +409,27 @@ $currentPage = 'manager_monitor'; // Set the current page for active tab highlig
     <script src="js/jquery.countdown.min.js"></script>
     <script src="js/aos.js"></script>
     <script src="js/main.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function showHistory(volunteerID) {
+            // Scroll to the history section
+            document.getElementById('history-section').scrollIntoView({
+                behavior: 'smooth'
+            });
+
+            // Fetch history data using AJAX
+            $.ajax({
+                url: 'fetch_history.php', // Create this PHP file to handle the request
+                type: 'GET',
+                data: {
+                    volunteerID: volunteerID
+                },
+                success: function(data) {
+                    $('#history-table tbody').html(data); // Populate the history table
+                }
+            });
+        }
+    </script>
 </body>
 
 </html>
