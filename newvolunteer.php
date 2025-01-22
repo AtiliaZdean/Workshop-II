@@ -18,7 +18,7 @@ $stmtPending->execute();
 $resultPending = $stmtPending->get_result();
 
 // Query for managers with less than 10 volunteers
-$queryManagers = "SELECT VolunteerID, Name FROM volunteer WHERE RoleID = 5 AND (SELECT COUNT(*) FROM volunteer WHERE ManagerID = volunteer.VolunteerID) < 15";
+$queryManagers = "SELECT VolunteerID, Name FROM volunteer WHERE RoleID = 5 AND (SELECT COUNT(*) FROM volunteer WHERE ManagerID = volunteer.VolunteerID AND Status = 'Active') < 15";
 $stmtManagers = $conn->prepare($queryManagers);
 $stmtManagers->execute();
 $resultManagers = $stmtManagers->get_result();
@@ -214,19 +214,14 @@ while ($row = $resultManagers->fetch_assoc()) {
             color: #fff;
             text-align: center;
             padding: 3px 10px;
-            /* Adjust padding */
             border-radius: 4px;
             text-decoration: none;
             font-weight: bold;
             font-size: 15px;
             border: none;
-            /* Remove border */
             cursor: pointer;
-            /* Change cursor to pointer */
             width: 100%;
-            /* Make buttons fit the cell */
             box-sizing: border-box;
-            /* Include padding in width */
         }
 
         .btn:hover,
@@ -323,8 +318,9 @@ while ($row = $resultManagers->fetch_assoc()) {
                                         <td><?= htmlspecialchars($row['Date']); ?></td>
                                         <td><?= htmlspecialchars($row['Role']); ?></td>
                                         <td style="text-align: center;">
-                                            <form method="POST" action="assignationDB.php" style="display: inline-block;">
+                                            <form method="POST" action="newvolunteerDB.php" style="display: inline-block;">
                                                 <input type="hidden" name="volunteerID" value="<?= htmlspecialchars($row['VolunteerID']); ?>">
+                                                <input type="hidden" name="action" value="assign">
                                                 <select name="managerID" required style="width: 150px; height: 30px;">
                                                     <option value="">Select Manager</option>
                                                     <?php foreach ($managers as $manager): ?>
@@ -333,15 +329,9 @@ while ($row = $resultManagers->fetch_assoc()) {
                                                 </select>
                                                 <button type="submit" class="btn">Assign</button>
                                             </form>
-                                            <form method="POST" action="newvolunteerDB.php" style="display: inline-block;" onsubmit="return validateForm(this);">
+                                            <form method="POST" action="newvolunteerDB.php" style="display: inline-block;">
                                                 <input type="hidden" name="volunteerID" value="<?= htmlspecialchars($row['VolunteerID']); ?>">
                                                 <input type="hidden" name="action" value="approve">
-                                                <select name="managerID" id="managerSelect-<?= $row['VolunteerID']; ?>" style="display: none;">
-                                                    <option value="">Select Manager</option>
-                                                    <?php foreach ($managers as $manager): ?>
-                                                        <option value="<?= htmlspecialchars($manager['VolunteerID']); ?>"><?= htmlspecialchars($manager['Name']); ?></option>
-                                                    <?php endforeach; ?>
-                                                </select>
                                                 <button type="submit" class="btn-approve" style="margin-top: 5px;">Approve</button>
                                             </form>
                                         </td>
@@ -371,20 +361,6 @@ while ($row = $resultManagers->fetch_assoc()) {
     <script src="js/jquery.countdown.min.js"></script>
     <script src="js/aos.js"></script>
     <script src="js/main.js"></script>
-
-    <script>
-        function validateForm(form) {
-            // Get the manager select element from the previous form
-            const managerSelect = form.previousElementSibling.querySelector('select[name="managerID"]');
-
-            // Check if a manager has been selected
-            if (managerSelect.value === "") {
-                alert("Please assign a manager before approving.");
-                return false; // Prevent form submission
-            }
-            return true; // Allow form submission
-        }
-    </script>
 
     <script>
         function confirmAction(action, form) {
