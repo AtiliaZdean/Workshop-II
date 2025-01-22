@@ -177,11 +177,17 @@ $currentPage = 'programme-search'; // Set the current page for active tab highli
             /* Yellow background for hover and active states */
             color: #000;
             text-align: center;
-            padding: 10px 20px;
+            padding: 3px 10px;
             border-radius: 4px;
             text-decoration: none;
             font-weight: bold;
             border: none;
+            font-size: 15px;
+        }
+
+        .btn:hover {
+            background-color: #fff;
+            color: #000;
         }
 
         .btn-danger {
@@ -262,9 +268,9 @@ $currentPage = 'programme-search'; // Set the current page for active tab highli
                             <table>
                                 <thead>
                                     <tr>
-                                        <th>Programme</th>
-                                        <th>Description</th>
-                                        <th>Volunteer Count</th>
+                                        <th style="text-align: center;">Programme</th>
+                                        <th style="text-align: center;">Description</th>
+                                        <th style="text-align: center;">Volunteer Count</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -279,9 +285,9 @@ $currentPage = 'programme-search'; // Set the current page for active tab highli
                                     while ($row = $programmeResult->fetch_assoc()) :
                                     ?>
                                         <tr>
-                                            <td><?= $row['Programme']; ?></td>
+                                            <td style="text-align: center;"><?= $row['Programme']; ?></td>
                                             <td><?= $row['Description']; ?></td>
-                                            <td><?= $row['Volunteer_Count']; ?></td>
+                                            <td style="text-align: center;"><?= $row['Volunteer_Count']; ?></td>
                                         </tr>
                                     <?php endwhile; ?>
                                 </tbody>
@@ -291,12 +297,12 @@ $currentPage = 'programme-search'; // Set the current page for active tab highli
                             <table>
                                 <thead>
                                     <tr>
-                                        <th>No.</th>
-                                        <th>Matric No.</th>
-                                        <th>Name</th>
-                                        <th>Year Of Study</th>
-                                        <th>Role</th>
-                                        <th>Manager</th>
+                                        <th style="text-align: center;">No.</th>
+                                        <th style="text-align: center;">Matric No.</th>
+                                        <th style="text-align: center;">Name</th>
+                                        <th style="text-align: center;">Year Of Study</th>
+                                        <th style="text-align: center;">Role</th>
+                                        <th style="text-align: center;">Manager</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -314,18 +320,24 @@ $currentPage = 'programme-search'; // Set the current page for active tab highli
                                     $stmt->execute();
                                     $volunteers = $stmt->get_result();
 
-                                    $i = 1;
-                                    while ($row = $volunteers->fetch_assoc()) :
+                                    if ($volunteers->num_rows > 0) {
+                                        $i = 1;
+                                        while ($row = $volunteers->fetch_assoc()) :
                                     ?>
+                                            <tr>
+                                                <td style="text-align: center;"><?= $i++; ?></td>
+                                                <td><?= $row['Matric Number']; ?></td>
+                                                <td><?= $row['Name']; ?></td>
+                                                <td style="text-align: center;"><?= $row['Year Of Study']; ?></td>
+                                                <td><?= $row['Role']; ?></td>
+                                                <td><?= $row['Manager']; ?></td>
+                                            </tr>
+                                        <?php endwhile; ?>
+                                    <?php } else { ?>
                                         <tr>
-                                            <td><?= $i++; ?></td>
-                                            <td><?= $row['Matric Number']; ?></td>
-                                            <td><?= $row['Name']; ?></td>
-                                            <td><?= $row['Year Of Study']; ?></td>
-                                            <td><?= $row['Role']; ?></td>
-                                            <td><?= $row['Manager']; ?></td>
+                                            <td colspan="6" class="text-center">No record of '<?= htmlspecialchars($programme); ?>' found.</td>
                                         </tr>
-                                    <?php endwhile; ?>
+                                    <?php } ?>
                                 </tbody>
                             </table>
                         <?php endif; ?>
