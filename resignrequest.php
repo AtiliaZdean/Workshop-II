@@ -185,15 +185,17 @@ $resultApprovedDenied = $stmtApprovedDenied->get_result();
             background-color: #ddd;
         }
 
-        .btn {
+        .btn,
+        .btn-activate {
             display: inline-block;
             background-color: #252525;
             color: #fff;
             text-align: center;
-            padding: 10px 20px;
+            padding: 3px 10px;
             border-radius: 4px;
             text-decoration: none;
             font-weight: bold;
+            font-size: 15px;
         }
 
         .btn1 {
@@ -202,27 +204,25 @@ $resultApprovedDenied = $stmtApprovedDenied->get_result();
             /* Yellow background for hover and active states */
             color: #000;
             text-align: center;
-            padding: 10px 20px;
+            padding: 3px 10px;
             border-radius: 4px;
             text-decoration: none;
             font-weight: bold;
             border: none;
+            font-size: 15px;
         }
 
         .btn-approve,
         .btn-deny,
         .btn-activate {
             display: inline-block;
-            background-color: #252525;
-            /* Black background */
-            color: #fff;
-            /* White text */
             text-align: center;
-            padding: 10px 15px;
+            padding: 3px 10px;
             /* Adjust padding */
             border-radius: 4px;
             text-decoration: none;
             font-weight: bold;
+            font-size: 15px;
             border: none;
             /* Remove border */
             cursor: pointer;
@@ -233,11 +233,23 @@ $resultApprovedDenied = $stmtApprovedDenied->get_result();
             /* Include padding in width */
         }
 
+        .btn-approve {
+            background-color: #28a745;
+            /* Green for approve */
+            color: #fff;
+        }
+
+        .btn-deny {
+            background-color: #dc3545;
+            /* Red for deny */
+            color: #fff;
+        }
+
         .btn-approve:hover,
         .btn-deny:hover,
         .btn-activate:hover {
-            background-color: #343a40;
-            /* Darker shade on hover */
+            background-color: #fff;
+            color: #000;
         }
 
         .btn-danger {
@@ -294,8 +306,8 @@ $resultApprovedDenied = $stmtApprovedDenied->get_result();
             <div class="container">
                 <div class="row justify-content-center mb-5">
                     <div class="col-md-7 text-center heading-section">
-                        <h2 class="mb-4">Pending Resignation Requests</h2>
-                        <p>Requests of Volunteer Resignation</p>
+                        <h2 class="mb-4">Resign Requests</h2>
+                        <p>Pending requests of volunteer resignation.</p>
                     </div>
                 </div>
                 <div class="row">
@@ -303,12 +315,12 @@ $resultApprovedDenied = $stmtApprovedDenied->get_result();
                         <table>
                             <thead>
                                 <tr>
-                                    <th>No.</th>
-                                    <th>Matric No.</th>
-                                    <th>Name</th>
-                                    <th>Role</th>
-                                    <th>Reason</th>
-                                    <th>Action</th>
+                                    <th style="text-align: center;">No.</th>
+                                    <th style="text-align: center;">Matric No.</th>
+                                    <th style="text-align: center;">Name</th>
+                                    <th style="text-align: center;">Role</th>
+                                    <th style="text-align: center;">Reason</th>
+                                    <th style="text-align: center;">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -316,13 +328,13 @@ $resultApprovedDenied = $stmtApprovedDenied->get_result();
                                 $i = 1; // Initialize counter
                                 while ($row = $resultPending->fetch_assoc()): ?>
                                     <tr>
-                                        <td><?= $i++; ?></td>
+                                        <td style="text-align: center;"><?= $i++; ?></td>
                                         <td><?= htmlspecialchars($row['MatricNo']); ?></td>
                                         <td><?= htmlspecialchars($row['Name']); ?></td>
-                                        <td><?= htmlspecialchars($row['Note']); ?></td>
                                         <td><?= htmlspecialchars($row['RoleName']); ?></td>
+                                        <td><?= htmlspecialchars($row['Note']); ?></td>
                                         <td>
-                                            <div style="display: flex; gap: 10px;"> <!-- Use flexbox for alignment -->
+                                            <div style="display: flex; gap: 10px; justify-content: center;"> <!-- Use flexbox for alignment -->
                                                 <form method="POST" action="resignrequestDB.php" class="action-form">
                                                     <input type="hidden" name="volunteerID" value="<?= htmlspecialchars($row['VolunteerID']); ?>">
                                                     <input type="hidden" name="action" value="approve"> <!-- Hidden input for action -->
@@ -331,7 +343,7 @@ $resultApprovedDenied = $stmtApprovedDenied->get_result();
                                                 <form method="POST" action="resignrequestDB.php" class="action-form">
                                                     <input type="hidden" name="volunteerID" value="<?= htmlspecialchars($row['VolunteerID']); ?>">
                                                     <input type="hidden" name="action" value="deny"> <!-- Hidden input for action -->
-                                                    <button type="button" class="btn-deny" onclick="confirmAction('deny', this.form)">Deny</button>
+                                                    <button type="button" class="btn-deny" onclick="confirmAction('deny', this.form)">Reject</button>
                                                 </form>
                                                 <form method="POST" action="resignrequestDB.php" class="action-form">
                                                     <input type="hidden" name="volunteerID" value="<?= htmlspecialchars($row['VolunteerID']); ?>">
@@ -349,16 +361,16 @@ $resultApprovedDenied = $stmtApprovedDenied->get_result();
 
                 <div class="row mt-5">
                     <div class="col-md-12">
-                        <h3>Approved and Denied Requests</h3>
+                        <h3>Approved and Rejected Requests</h3>
                         <table>
                             <thead>
                                 <tr>
-                                    <th>No.</th>
-                                    <th>Matric No.</th>
-                                    <th>Name</th>
-                                    <th>Reason</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
+                                    <th style="text-align: center;">No.</th>
+                                    <th style="text-align: center;">Matric No.</th>
+                                    <th style="text-align: center;">Name</th>
+                                    <th style="text-align: center;">Reason</th>
+                                    <th style="text-align: center;">Status</th>
+                                    <th style="text-align: center;">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -366,24 +378,26 @@ $resultApprovedDenied = $stmtApprovedDenied->get_result();
                                 $j = 1; // Initialize counter for approved/denied requests
                                 while ($row = $resultApprovedDenied->fetch_assoc()): ?>
                                     <tr>
-                                        <td><?= $j++; ?></td>
+                                        <td style="text-align: center;"><?= $j++; ?></td> <!-- Center the No. column -->
                                         <td><?= htmlspecialchars($row['MatricNo']); ?></td>
                                         <td><?= htmlspecialchars($row['Name']); ?></td>
                                         <td><?= htmlspecialchars($row['Note']); ?></td>
                                         <td><?= htmlspecialchars($row['Status']); ?></td>
                                         <td>
-                                            <form method="POST" action="resignrequestDB.php">
-                                                <input type="hidden" name="volunteerID" value="<?= htmlspecialchars($row['VolunteerID']); ?>">
-                                                <input type="hidden" name="action" value="approve"> <!-- Hidden input for action -->
-                                                <?php if ($row['Status'] == 'Resign Denied'): ?>
-                                                    <button type="submit" class="btn-approve">Approve</button>
-                                                <?php endif; ?>
-                                            </form>
-                                            <form method="POST" action="resignrequestDB.php">
-                                                <input type="hidden" name="volunteerID" value="<?= htmlspecialchars($row['VolunteerID']); ?>">
-                                                <input type="hidden" name="action" value="activate"> <!-- Hidden input for action -->
-                                                <button type="submit" class="btn-activate">Activate</button>
-                                            </form>
+                                            <div style="display: flex; gap: 10px; justify-content: center;"> <!-- Use flexbox for alignment -->
+                                                <form method="POST" action="resignrequestDB.php">
+                                                    <input type="hidden" name="volunteerID" value="<?= htmlspecialchars($row['VolunteerID']); ?>">
+                                                    <input type="hidden" name="action" value="approve"> <!-- Hidden input for action -->
+                                                    <?php if ($row['Status'] == 'Resign Denied'): ?>
+                                                        <button type="submit" class="btn-approve">Approve</button>
+                                                    <?php endif; ?>
+                                                </form>
+                                                <form method="POST" action="resignrequestDB.php">
+                                                    <input type="hidden" name="volunteerID" value="<?= htmlspecialchars($row['VolunteerID']); ?>">
+                                                    <input type="hidden" name="action" value="activate"> <!-- Hidden input for action -->
+                                                    <button type="submit" class="btn-activate">Activate</button>
+                                                </form>
+                                            </div>
                                         </td>
                                     </tr>
                                 <?php endwhile; ?>
@@ -413,11 +427,22 @@ $resultApprovedDenied = $stmtApprovedDenied->get_result();
     <script src="js/main.js"></script>
 
     <script>
-        function confirmAction(action, form) {
-            const message = action === 'approve' ? 'Are you sure you want to approve this resignation request?' : 'Are you sure you want to deny this resignation request?';
-            if (confirm(message)) {
-                form.submit(); // Submit the form if confirmed
-            }
+        let message;
+        switch (action) {
+            case 'approve':
+                message = 'Are you sure you want to approve this resignation request?';
+                break;
+            case 'deny':
+                message = 'Are you sure you want to deny this resignation request?';
+                break;
+            case 'activate':
+                message = 'Are you sure you want to activate this volunteer?';
+                break;
+            default:
+                return; // Exit if action is not recognized
+        }
+        if (confirm(message)) {
+            form.submit(); // Submit the form if confirmed
         }
     </script>
 </body>
