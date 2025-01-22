@@ -189,26 +189,25 @@ $resultPending = $stmtPending->get_result();
             /* Yellow background for hover and active states */
             color: #000;
             text-align: center;
-            padding: 10px 20px;
+            padding: 3px 10px;
             border-radius: 4px;
             text-decoration: none;
             font-weight: bold;
             border: none;
+            font-size: 15px;
         }
 
-        .btn-approve,
-        .btn-deny {
+        .btn-approve {
             display: inline-block;
-            background-color: #252525;
-            /* Black background */
+            background-color: #28a745;
             color: #fff;
-            /* White text */
             text-align: center;
-            padding: 10px 15px;
+            padding: 3px 10px;
             /* Adjust padding */
             border-radius: 4px;
             text-decoration: none;
             font-weight: bold;
+            font-size: 15px;
             border: none;
             /* Remove border */
             cursor: pointer;
@@ -219,10 +218,9 @@ $resultPending = $stmtPending->get_result();
             /* Include padding in width */
         }
 
-        .btn-approve:hover,
-        .btn-deny:hover {
-            background-color: #343a40;
-            /* Darker shade on hover */
+        .btn-approve:hover {
+            background-color: #fff;
+            color: #000;
         }
 
         .btn-danger {
@@ -280,8 +278,8 @@ $resultPending = $stmtPending->get_result();
             <div class="container">
                 <div class="row justify-content-center mb-5">
                     <div class="col-md-7 text-center heading-section">
-                        <h2 class="mb-4">Pending Volunteer Registrations</h2>
-                        <p>...</p>
+                        <h2 class="mb-4">Registration Approval</h2>
+                        <p>Pending volunteer registrations.</p>
                     </div>
                 </div>
                 <div class="row">
@@ -289,15 +287,15 @@ $resultPending = $stmtPending->get_result();
                         <table>
                             <thead>
                                 <tr>
-                                    <th>No.</th>
-                                    <th>Matric No.</th>
-                                    <th>Name</th>
-                                    <th>Contact No.</th>
-                                    <th>Programme</th>
-                                    <th>Year Of Study</th>
-                                    <th>Date Of Registration</th>
-                                    <th>Role</th>
-                                    <th>Action</th>
+                                    <th style="text-align: center;">No.</th>
+                                    <th style="text-align: center;">Matric No.</th>
+                                    <th style="text-align: center;">Name</th>
+                                    <th style="text-align: center;">Contact No.</th>
+                                    <th style="text-align: center;">Programme</th>
+                                    <th style="text-align: center;">Year Of Study</th>
+                                    <th style="text-align: center;">Date Of Registration</th>
+                                    <th style="text-align: center;">Role</th>
+                                    <th style="text-align: center;">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -305,19 +303,19 @@ $resultPending = $stmtPending->get_result();
                                 $i = 1;
                                 while ($row = $resultPending->fetch_assoc()): ?>
                                     <tr>
-                                        <td><?= $i++; ?></td>
+                                        <td style="text-align: center;"><?= $i++; ?></td>
                                         <td><?= htmlspecialchars($row['Matric Number']); ?></td>
                                         <td><?= htmlspecialchars($row['Name']); ?></td>
                                         <td><?= htmlspecialchars($row['Contact']); ?></td>
-                                        <td><?= htmlspecialchars($row['Programme']); ?></td>
-                                        <td><?= htmlspecialchars($row['Year Of Study']); ?></td>
+                                        <td style="text-align: center;"><?= htmlspecialchars($row['Programme']); ?></td>
+                                        <td style="text-align: center;"><?= htmlspecialchars($row['Year Of Study']); ?></td>
                                         <td><?= htmlspecialchars($row['Date']); ?></td>
                                         <td><?= htmlspecialchars($row['Role']); ?></td>
-                                        <td>
+                                        <td style="text-align: center;">
                                             <form method="POST" action="newvolunteerDB.php">
                                                 <input type="hidden" name="volunteerID" value="<?= htmlspecialchars($row['VolunteerID']); ?>">
                                                 <input type="hidden" name="action" value="approve">
-                                                <button type="submit" class="btn btn-success">Approve</button>
+                                                <button type="submit" class="btn-approve">Approve</button>
                                             </form>
                                         </td>
                                     </tr>
