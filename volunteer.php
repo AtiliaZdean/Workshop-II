@@ -224,11 +224,12 @@ if (isset($_SESSION['VolunteerID'])) {
             /* Yellow background for hover and active states */
             color: #000;
             text-align: center;
-            padding: 10px 20px;
+            padding: 3px 10px;
             border-radius: 4px;
             text-decoration: none;
             font-weight: bold;
             border: none;
+            font-size: 15px;
         }
 
         .btn-danger {
