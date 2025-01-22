@@ -183,10 +183,11 @@ while ($row = $resultManagers->fetch_assoc()) {
             background-color: #252525;
             color: #fff;
             text-align: center;
-            padding: 10px 20px;
+            padding: 3px 10px;
             border-radius: 4px;
             text-decoration: none;
             font-weight: bold;
+            font-size: 15px;
         }
 
         .btn1 {
@@ -195,40 +196,17 @@ while ($row = $resultManagers->fetch_assoc()) {
             /* Yellow background for hover and active states */
             color: #000;
             text-align: center;
-            padding: 10px 20px;
+            padding: 3px 10px;
             border-radius: 4px;
             text-decoration: none;
             font-weight: bold;
             border: none;
+            font-size: 15px;
         }
 
-        .btn-approve,
-        .btn-deny {
-            display: inline-block;
-            background-color: #252525;
-            /* Black background */
-            color: #fff;
-            /* White text */
-            text-align: center;
-            padding: 10px 15px;
-            /* Adjust padding */
-            border-radius: 4px;
-            text-decoration: none;
-            font-weight: bold;
-            border: none;
-            /* Remove border */
-            cursor: pointer;
-            /* Change cursor to pointer */
-            width: 100%;
-            /* Make buttons fit the cell */
-            box-sizing: border-box;
-            /* Include padding in width */
-        }
-
-        .btn-approve:hover,
-        .btn-deny:hover {
-            background-color: #343a40;
-            /* Darker shade on hover */
+        .btn:hover {
+            background-color: #fff;
+            color: #000;
         }
 
         .btn-danger {
@@ -286,8 +264,8 @@ while ($row = $resultManagers->fetch_assoc()) {
             <div class="container">
                 <div class="row justify-content-center mb-5">
                     <div class="col-md-7 text-center heading-section">
-                        <h2 class="mb-4">Assign Managers to Approved Volunteers</h2>
-                        <p>...</p>
+                        <h2 class="mb-4">Manager Assignment</h2>
+                        <p>Assign available manager to approved volunteers.</p>
                     </div>
                 </div>
                 <div class="row">
@@ -295,10 +273,10 @@ while ($row = $resultManagers->fetch_assoc()) {
                         <table>
                             <thead>
                                 <tr>
-                                    <th>No.</th>
-                                    <th>Matric No.</th>
-                                    <th>Name</th>
-                                    <th>Assign Manager</th>
+                                    <th style="text-align: center;">No.</th>
+                                    <th style="text-align: center;">Matric No.</th>
+                                    <th style="text-align: center;">Name</th>
+                                    <th style="text-align: center;">Assign Manager</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -306,19 +284,19 @@ while ($row = $resultManagers->fetch_assoc()) {
                                 $i = 1;
                                 while ($row = $resultApproved->fetch_assoc()): ?>
                                     <tr>
-                                        <td><?= $i++; ?></td>
+                                        <td style="text-align: center;"><?= $i++; ?></td>
                                         <td><?= htmlspecialchars($row['MatricNo']); ?></td>
                                         <td><?= htmlspecialchars($row['Name']); ?></td>
-                                        <td>
+                                        <td style="text-align: center;">
                                             <form method="POST" action="assignationDB.php">
                                                 <input type="hidden" name="volunteerID" value="<?= htmlspecialchars($row['VolunteerID']); ?>">
-                                                <select name="managerID" required>
+                                                <select name="managerID" required style="width: 200px; height: 30px;">
                                                     <option value="">Select Manager</option>
                                                     <?php foreach ($managers as $manager): ?>
                                                         <option value="<?= htmlspecialchars($manager['VolunteerID']); ?>"><?= htmlspecialchars($manager['Name']); ?></option>
                                                     <?php endforeach; ?>
                                                 </select>
-                                                <button type="submit" class="btn btn-primary">Assign</button>
+                                                <button type="submit" class="btn">Assign</button>
                                             </form>
                                         </td>
                                     </tr>
