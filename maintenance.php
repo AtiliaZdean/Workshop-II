@@ -232,17 +232,23 @@ flush(); // Flush the system output buffer
             font-weight: bold;
         }
 
+        .btn:hover {
+            background-color: #fff;
+            color: #000;
+        }
+
         .btn1 {
             display: inline-block;
             background-color: #fab702;
             /* Yellow background for hover and active states */
             color: #000;
             text-align: center;
-            padding: 10px 20px;
+            padding: 3px 10px;
             border-radius: 4px;
             text-decoration: none;
             font-weight: bold;
             border: none;
+            font-size: 15px;
         }
 
         .btn-danger {
@@ -317,7 +323,7 @@ flush(); // Flush the system output buffer
                                         <td>Backup Database</td>
                                         <td></td>
                                         <td>
-                                            <button type="submit" name="backup" class="btn btn-primary">Backup</button>
+                                            <button type="submit" name="backup" class="btn">Backup</button>
                                         </td>
                                     </tr>
                                     <tr>
@@ -332,7 +338,7 @@ flush(); // Flush the system output buffer
                                             </select>
                                         </td>
                                         <td>
-                                            <button type="submit" name="restore" class="btn btn-warning">Restore</button>
+                                            <button type="submit" name="restore" class="btn">Restore</button>
                                         </td>
                                     </tr>
                                 </tbody>
