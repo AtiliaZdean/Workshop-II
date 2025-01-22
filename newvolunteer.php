@@ -16,6 +16,16 @@ $queryPendingVolunteers = "SELECT v.VolunteerID, v.MatricNo AS 'Matric Number', 
 $stmtPending = $conn->prepare($queryPendingVolunteers);
 $stmtPending->execute();
 $resultPending = $stmtPending->get_result();
+
+// Query for managers with less than 10 volunteers
+$queryManagers = "SELECT VolunteerID, Name FROM volunteer WHERE RoleID = 5 AND (SELECT COUNT(*) FROM volunteer WHERE ManagerID = volunteer.VolunteerID) < 15";
+$stmtManagers = $conn->prepare($queryManagers);
+$stmtManagers->execute();
+$resultManagers = $stmtManagers->get_result();
+$managers = [];
+while ($row = $resultManagers->fetch_assoc()) {
+    $managers[] = $row;
+}
 ?>
 
 <!DOCTYPE html>
@@ -177,10 +187,11 @@ $resultPending = $stmtPending->get_result();
             background-color: #252525;
             color: #fff;
             text-align: center;
-            padding: 10px 20px;
+            padding: 3px 10px;
             border-radius: 4px;
             text-decoration: none;
             font-weight: bold;
+            font-size: 15px;
         }
 
         .btn1 {
@@ -218,6 +229,7 @@ $resultPending = $stmtPending->get_result();
             /* Include padding in width */
         }
 
+        .btn:hover,
         .btn-approve:hover {
             background-color: #fff;
             color: #000;
@@ -264,7 +276,6 @@ $resultPending = $stmtPending->get_result();
         <?php if (isset($_SESSION['VolunteerID'])): ?>
             <?php if (isset($_SESSION['RoleID']) && $_SESSION['RoleID'] == 8): ?>
                 <a href="newvolunteer.php" class="active">Registration Approval</a>
-                <a href="assignation.php">Manager Assignment</a>
                 <a href="account-access.php">Account Access</a>
                 <a href="maintenance.php">Maintenance</a>
             <?php endif; ?>
@@ -312,10 +323,26 @@ $resultPending = $stmtPending->get_result();
                                         <td><?= htmlspecialchars($row['Date']); ?></td>
                                         <td><?= htmlspecialchars($row['Role']); ?></td>
                                         <td style="text-align: center;">
-                                            <form method="POST" action="newvolunteerDB.php">
+                                            <form method="POST" action="assignationDB.php" style="display: inline-block;">
+                                                <input type="hidden" name="volunteerID" value="<?= htmlspecialchars($row['VolunteerID']); ?>">
+                                                <select name="managerID" required style="width: 150px; height: 30px;">
+                                                    <option value="">Select Manager</option>
+                                                    <?php foreach ($managers as $manager): ?>
+                                                        <option value="<?= htmlspecialchars($manager['VolunteerID']); ?>"><?= htmlspecialchars($manager['Name']); ?></option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                                <button type="submit" class="btn">Assign</button>
+                                            </form>
+                                            <form method="POST" action="newvolunteerDB.php" style="display: inline-block;" onsubmit="return validateForm(this);">
                                                 <input type="hidden" name="volunteerID" value="<?= htmlspecialchars($row['VolunteerID']); ?>">
                                                 <input type="hidden" name="action" value="approve">
-                                                <button type="submit" class="btn-approve">Approve</button>
+                                                <select name="managerID" id="managerSelect-<?= $row['VolunteerID']; ?>" style="display: none;">
+                                                    <option value="">Select Manager</option>
+                                                    <?php foreach ($managers as $manager): ?>
+                                                        <option value="<?= htmlspecialchars($manager['VolunteerID']); ?>"><?= htmlspecialchars($manager['Name']); ?></option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                                <button type="submit" class="btn-approve" style="margin-top: 5px;">Approve</button>
                                             </form>
                                         </td>
                                     </tr>
@@ -344,6 +371,20 @@ $resultPending = $stmtPending->get_result();
     <script src="js/jquery.countdown.min.js"></script>
     <script src="js/aos.js"></script>
     <script src="js/main.js"></script>
+
+    <script>
+        function validateForm(form) {
+            // Get the manager select element from the previous form
+            const managerSelect = form.previousElementSibling.querySelector('select[name="managerID"]');
+
+            // Check if a manager has been selected
+            if (managerSelect.value === "") {
+                alert("Please assign a manager before approving.");
+                return false; // Prevent form submission
+            }
+            return true; // Allow form submission
+        }
+    </script>
 
     <script>
         function confirmAction(action, form) {
