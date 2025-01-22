@@ -236,7 +236,6 @@ $currentPage = 'programme-search'; // Set the current page for active tab highli
             <?php endif; ?>
             <?php if (isset($_SESSION['RoleID']) && $_SESSION['RoleID'] == 8): ?>
                 <a href="newvolunteer.php">Registration Approval</a>
-                <a href="assignation.php">Manager Assignment</a>
                 <a href="account-access.php">Account Access</a>
                 <a href="maintenance.php">Maintenance</a>
             <?php endif; ?>
