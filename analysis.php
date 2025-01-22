@@ -190,6 +190,11 @@ $currentPage = 'analysis'; // Set the current page for active tab highlighting
         }
 
         @media print {
+            .print-hidden {
+                display: none;
+                /* Hide this class in print view */
+            }
+
             body * {
                 visibility: hidden;
                 /* Hide everything */
@@ -206,6 +211,8 @@ $currentPage = 'analysis'; // Set the current page for active tab highlighting
                 /* Position content for printing */
                 left: 0;
                 top: 0;
+                text-align: center;
+                margin: 0 auto;
             }
 
             .btn,
@@ -288,113 +295,86 @@ $currentPage = 'analysis'; // Set the current page for active tab highlighting
                     </div>
                 </div>
 
-                <!-- Year Selection Form -->
-                <div class="row">
+                <!-- Year and Report Type Selection Form -->
+                <div class="row print-hidden">
                     <div class="col-md-12">
-                        <h3>Select Year for Analysis</h3>
+                        <h3>Select Year and Report Type for Analysis</h3>
                         <form method="POST" action="">
-                            <select name="selectedYear" required style="width: 200px; height: 45px;">
+                            <select name="selectedYear" required style="width: 125px; height: 45px;">
                                 <option value="">Select Year</option>
                                 <?php
-                                // Populate years dynamically (e.g., from 2000 to current year)
                                 $currentYear = date("Y");
                                 for ($year = 2023; $year <= $currentYear; $year++) {
                                     echo "<option value='$year'>$year</option>";
                                 }
                                 ?>
                             </select>
+                            <select name="reportType" required style="width: 325px; height: 45px;">
+                                <option value="">Select Report Type</option>
+                                <option value="programme">Volunteers Count by Programme</option>
+                                <option value="yearOfStudy">Volunteers Count by Year of Study</option>
+                            </select>
                             <button type="submit" class="btn">Generate Report</button>
                         </form>
                     </div>
                 </div>
-
                 <?php
-                if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['selectedYear'])) {
+                if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['selectedYear']) && isset($_POST['reportType'])) {
                     $selectedYear = intval($_POST['selectedYear']);
+                    $reportType = $_POST['reportType'];
                 ?>
 
-                    <!-- Reporting Section 1: Volunteers Count by Programme -->
+                    <!-- Reporting Section -->
                     <div class="row mt-5">
-                        <div class="col-md-12">
-                            <h3>Volunteers Count by Programme for Year: <?= htmlspecialchars($selectedYear); ?></h3>
-                            <div class="chart-container">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th style="text-align: center;">Programme</th>
-                                            <th style="text-align: center;">Description</th>
-                                            <th style="text-align: center;">Volunteer Count</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php
+                        <div class="col-md-12 printable-content">
+                            <h3><?= htmlspecialchars($reportType == 'programme' ? 'Volunteers Count by Programme' : 'Volunteers Count by Year of Study'); ?> for Year: <?= htmlspecialchars($selectedYear); ?></h3>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th style="text-align: center;">No.</th>
+                                        <th style="text-align: center;"><?= $reportType == 'programme' ? 'Programme' : 'Year of Study'; ?></th>
+                                        <th style="text-align: center;">Volunteer Count</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    $rowNumber = 1;
+                                    if ($reportType == 'programme') {
                                         $query = "CALL GetVolunteersCountByProgrammeByYear($selectedYear)";
-                                        $programmeResult = $conn->query($query);
+                                    } else {
+                                        $query = "CALL GetVolunteersCountByYearOfStudyByYear($selectedYear)";
+                                    }
+                                    $result = $conn->query($query);
 
-                                        if ($programmeResult) {
-                                            while ($row = $programmeResult->fetch_assoc()) :
-                                        ?>
-                                                <tr>
-                                                    <td style="text-align: center;"><?= htmlspecialchars($row['Programme']); ?></td>
-                                                    <td><?= htmlspecialchars($row['Description']); ?></td>
-                                                    <td style="text-align: center;"><?= htmlspecialchars($row['Volunteer_Count']); ?></td>
-                                                </tr>
-                                        <?php
-                                            endwhile;
-                                            $programmeResult->free(); // Free the result set
-                                            $conn->next_result(); // Move to the next result set
-                                        } else {
-                                            echo "Error executing procedure: " . $conn->error;
-                                        }
-                                        ?>
-                                    </tbody>
-                                </table>
-                                <canvas id="programmeChart" width="400" height="200"></canvas>
-                            </div>
+                                    if ($result) {
+                                        while ($row = $result->fetch_assoc()) :
+                                    ?>
+                                            <tr>
+                                                <td style="text-align: center;"><?= $rowNumber++; ?></td>
+                                                <td style="text-align: center;"><?= htmlspecialchars($reportType == 'programme' ? $row['Programme'] : $row['YearOfStudy']); ?></td>
+                                                <td style="text-align: center;"><?= htmlspecialchars($row['Volunteer_Count']); ?></td>
+                                            </tr>
+                                    <?php
+                                        endwhile;
+                                        $result->free();
+                                    } else {
+                                        echo "<tr><td colspan='2'>Error executing procedure: " . htmlspecialchars($conn->error) . "</td></tr>";
+                                    }
+                                    ?>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
 
-                    <!-- Reporting Section 2: Volunteers Count by Year of Study -->
+                    <!-- Chart Section -->
                     <div class="row mt-5">
-                        <div class="col-md-12">
-                            <h3>Volunteers Count by Year of Study for Year: <?= htmlspecialchars($selectedYear); ?></h3>
-                            <div class="chart-container">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th style="text-align: center;">Year of Study</th>
-                                            <th style="text-align: center;">Volunteer Count</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php
-                                        $query = "CALL GetVolunteersCountByYearOfStudyByYear($selectedYear)";
-                                        $yearResult = $conn->query($query);
-
-                                        if ($yearResult) {
-                                            while ($row = $yearResult->fetch_assoc()) :
-                                        ?>
-                                                <tr>
-                                                    <td style="text-align: center;"><?= htmlspecialchars($row['YearOfStudy']); ?></td>
-                                                    <td style="text-align: center;"><?= htmlspecialchars($row['Volunteer_Count']); ?></td>
-                                                </tr>
-                                        <?php
-                                            endwhile;
-                                            $yearResult->free(); // Free the result set
-                                        } else {
-                                            echo "<tr><td colspan='2'>Error: " . htmlspecialchars($conn->error) . "</td></tr>";
-                                        }
-                                        $conn->next_result(); // Move to the next result set
-                                        ?>
-                                    </tbody>
-                                </table>
-                                <canvas id="yearChart" width="400" height="200"></canvas>
-                            </div>
+                        <div class="col-md-12 printable-content">
+                            <canvas id="chartCanvas" width="100" height="50"></canvas>
                         </div>
                     </div>
 
                     <?php include 'charts.php'; ?>
-                <?php } // End of POST check 
+                <?php } // End of POST check
                 ?>
 
                 <div class="row print-button">
