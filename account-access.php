@@ -235,7 +235,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['actionType'])) {
         <?php if (isset($_SESSION['VolunteerID'])): ?>
             <?php if (isset($_SESSION['RoleID']) && $_SESSION['RoleID'] == 8): ?>
                 <a href="newvolunteer.php">Registration Approval</a>
-                <a href="assignation.php">Manager Assignment</a>
                 <a href="account-access.php" class="active">Account Access</a>
                 <a href="maintenance.php">Maintenance</a>
             <?php endif; ?>
