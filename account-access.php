@@ -2,6 +2,11 @@
 session_start(); // Start the session at the top of the file
 include 'database.php'; // Include database connection
 
+// Initialize selected action type
+$selectedActionType = 'FAILED LOGIN'; // Default action type
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['actionType'])) {
+    $selectedActionType = $_POST['actionType'];
+}
 ?>
 
 <!DOCTYPE html>
@@ -167,6 +172,12 @@ include 'database.php'; // Include database connection
             border-radius: 4px;
             text-decoration: none;
             font-weight: bold;
+            /*font-size: 15px;*/
+        }
+
+        .btn:hover {
+            background-color: #fff;
+            color: #000;
         }
 
         .btn1 {
@@ -175,11 +186,12 @@ include 'database.php'; // Include database connection
             /* Yellow background for hover and active states */
             color: #000;
             text-align: center;
-            padding: 10px 20px;
+            padding: 3px 10px;
             border-radius: 4px;
             text-decoration: none;
             font-weight: bold;
             border: none;
+            font-size: 15px;
         }
 
         .btn-danger {
@@ -233,40 +245,56 @@ include 'database.php'; // Include database connection
 
     <!-- Main Content Area -->
     <div class="content">
-        <section id="programme-search" class="ftco-section">
+        <section id="account-access" class="ftco-section">
             <div class="container">
                 <div class="row justify-content-center mb-5">
                     <div class="col-md-7 text-center heading-section">
-                        <h2 class="mb-4">Failed Account Access</h2>
-                        <p>Failed log in attempts.</p>
+                        <h2 class="mb-4">Account Access</h2>
+                        <p>Select the type of access log to view.</p>
                     </div>
                 </div>
+
+                <!-- Action Type Selection Form -->
                 <div class="row">
                     <div class="col-md-12">
+                        <form method="POST" action="">
+                            <select name="actionType" required style="width: 200px; height: 45px;">
+                                <option value="FAILED LOGIN" <?= $selectedActionType == 'FAILED LOGIN' ? 'selected' : ''; ?>>Failed Login</option>
+                                <option value="LOGIN" <?= $selectedActionType == 'LOGIN' ? 'selected' : ''; ?>>Login</option>
+                            </select>
+                            <button type="submit" class="btn">View Logs</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="row mt-5">
+                    <div class="col-md-12">
+                    <h3><?= $selectedActionType; ?> attempts log</h3>
                         <table>
                             <thead>
                                 <tr>
-                                    <th>No.</th>
-                                    <th>Matric No.</th>
-                                    <th>Name</th>
-                                    <th>Year Of Study</th>
-                                    <th>Contact No.</th>
-                                    <th>Role</th>
-                                    <th>Manager</th>
-                                    <th>Attempt At</th>
+                                    <th style="text-align: center;">No.</th>
+                                    <th style="text-align: center;">Matric No.</th>
+                                    <th style="text-align: center;">Name</th>
+                                    <th style="text-align: center;">Year Of Study</th>
+                                    <th style="text-align: center;">Contact No.</th>
+                                    <th style="text-align: center;">Role</th>
+                                    <th style="text-align: center;">Manager</th>
+                                    <th style="text-align: center;">Attempt At</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php
                                 $query = "SELECT v.MatricNo, v.Name, v.YearOfStudy, v.ContactNo, r.RoleName, m.Name AS 'Manager', al.DoneAT
-                                                FROM volunteer v
-                                                LEFT JOIN role r ON v.RoleID = r.RoleID
-                                                LEFT JOIN programme p ON v.ProgrammeID = p.ProgrammeID
-                                                LEFT JOIN volunteer m ON v.ManagerID = m.VolunteerID
-                                                JOIN accountlog al ON v.VolunteerID = al.VolunteerID
-                                                WHERE al.ActionType = 'FAILED LOGIN'";
+                                          FROM volunteer v
+                                          LEFT JOIN role r ON v.RoleID = r.RoleID
+                                          LEFT JOIN programme p ON v.ProgrammeID = p.ProgrammeID
+                                          LEFT JOIN volunteer m ON v.ManagerID = m.VolunteerID
+                                          JOIN accountlog al ON v.VolunteerID = al.VolunteerID
+                                          WHERE al.ActionType = ?";
 
                                 $stmt = $conn->prepare($query);
+                                $stmt->bind_param("s", $selectedActionType);
                                 $stmt->execute();
                                 $result = $stmt->get_result();
 
@@ -274,10 +302,10 @@ include 'database.php'; // Include database connection
                                 while ($row = $result->fetch_assoc()) :
                                 ?>
                                     <tr>
-                                        <td><?= $i++; ?></td>
+                                        <td style="text-align: center;"><?= $i++; ?></td>
                                         <td><?= $row['MatricNo']; ?></td>
                                         <td><?= $row['Name']; ?></td>
-                                        <td><?= $row['YearOfStudy']; ?></td>
+                                        <td style="text-align: center;"><?= $row['YearOfStudy']; ?></td>
                                         <td><?= $row['ContactNo']; ?></td>
                                         <td><?= $row['RoleName']; ?></td>
                                         <td><?= $row['Manager']; ?></td>
