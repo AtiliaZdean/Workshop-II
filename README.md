@@ -29,6 +29,11 @@ In this project, my role focused on **developing the Volunteer Module**, which e
 - Implement **mobile-friendly design** for accessibility on different devices.  
 - Enhance security with **two-factor authentication** for volunteer login.  
 - Integrate **dynamic dashboards** for real-time data visualization.
+
+## Academic Report Access  
+The full academic report for this project is available via Google Drive.  
+Access is restricted to protect academic integrity and privacy.  
+🔗 [Request Access to Report](https://drive.google.com/file/d/1QAFAQ5Z5yaKiZ3PP7r72UMNAl5ZP7HVw/view?usp=sharing)
   
 ## Contact  
 
